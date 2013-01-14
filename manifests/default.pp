@@ -2,7 +2,7 @@
 
 # installing updates and additional tools
 class system {
-	
+
   exec { 'apt-get update':
     command => '/usr/bin/apt-get update && /usr/bin/touch /var/cache/apt/pkgcache.bin'
   }
@@ -22,6 +22,7 @@ class apache {
 
   package { "apache2":
   	ensure => present,
+  	require => Exec['apt-get update'],
   }
   
   service { "apache2":
@@ -36,14 +37,17 @@ class php {
 
   package { "php5":
   	ensure => latest,
+  	require => Exec['apt-get update'],
   }
   
   package { "php5-cli":
   	ensure => latest,
+    require => Exec['apt-get update'],
   }
 
   package { "libapache2-mod-php5":
   	ensure => latest,
+    require => Exec['apt-get update'],
   }
   
 }
@@ -54,6 +58,7 @@ class tomcat {
 
   package { "tomcat6":
   	ensure => present,
+  	require => Exec['apt-get update'],
   }
   
   service { "tomcat6":
@@ -68,10 +73,12 @@ class mysql {
 
   package { "mysql-common":
   	ensure => present,
+  	require => Exec['apt-get update'],
   }
 
   package { "mysql-server":
   	ensure => present,
+	require => Exec['apt-get update'],
   }
 
  # package { "mysql-client":
