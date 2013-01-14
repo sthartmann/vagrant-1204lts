@@ -9,10 +9,22 @@ class system {
 
   package { "vim":
   	ensure => present,
+  	require => Exec['apt-get update'],
   }
 
   package { "curl":
-  	ensure => present, 
+  	ensure => present,
+  	require => Exec['apt-get update'], 
+  }
+
+  package { "git":
+  	ensure => present,
+  	require => Exec['apt-get update'], 
+  }
+
+  package { "screen":
+  	ensure => present,
+  	require => Exec['apt-get update'], 
   }
 
 }
@@ -81,10 +93,6 @@ class mysql {
 	require => Exec['apt-get update'],
   }
 
- # package { "mysql-client":
- # 	ensure => present,
- # }
-  
   service { "mysql-server":
     ensure => running,
     require => Package["mysql-server"],
