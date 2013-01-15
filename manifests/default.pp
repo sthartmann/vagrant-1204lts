@@ -1,4 +1,4 @@
-# Basic Puppet Apache manifest
+# Setting up Ubuntu 12.04 LTS Dev Virtual Machine
 
 # installing updates and additional tools
 class system {
@@ -13,6 +13,11 @@ class system {
   }
 
   package { "curl":
+  	ensure => present,
+  	require => Exec['apt-get update'], 
+  }
+
+  package { "unzip":
   	ensure => present,
   	require => Exec['apt-get update'], 
   }
@@ -42,6 +47,17 @@ class apache {
     require => Package["apache2"],
   }
 
+  exec { "/usr/sbin/a2enmod rewrite":
+  	unless => "/bin/readlink -e /etc/apache2/mods-enabled/rewrite.load",
+    notify => Exec["force-reload-apache2"],
+    require => Package["apache2"],
+  }
+
+  exec { "force-reload-apache2":
+      command => "/etc/init.d/apache2 force-reload",
+      refreshonly => true,
+   }
+
 }
 
 # setting up php5 
@@ -53,6 +69,26 @@ class php {
   }
   
   package { "php5-cli":
+  	ensure => latest,
+    require => Exec['apt-get update'],
+  }
+  
+  package { "php5-curl":
+  	ensure => latest,
+    require => Exec['apt-get update'],
+  }
+
+  package { "php5-mysqlnd":
+  	ensure => latest,
+    require => Exec['apt-get update'],
+  }
+
+  package { "php5-gd":
+  	ensure => latest,
+    require => Exec['apt-get update'],
+  }
+
+  package { "php5-xdebug":
   	ensure => latest,
     require => Exec['apt-get update'],
   }
@@ -72,6 +108,11 @@ class tomcat {
   	ensure => present,
   	require => Exec['apt-get update'],
   }
+
+  package { "solr-tomcat":
+  	ensure => present,
+  	require => Package['tomcat6'],
+  }  
   
   service { "tomcat6":
     ensure => running,
@@ -93,14 +134,7 @@ class mysql {
 	require => Exec['apt-get update'],
   }
 
-  service { "mysql-server":
-    ensure => running,
-    require => Package["mysql-server"],
-  }
-
 }
-
-
 
 
 include system
